@@ -1,0 +1,4 @@
+*** Variables ***
+${global_env}  X
+${global_data_filename}  Data/System Test UAT.xlsx
+${global_data_config_sheetname}  Config-${global_env}
