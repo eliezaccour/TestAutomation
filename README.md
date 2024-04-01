@@ -1,6 +1,6 @@
 # Automated User Acceptance Test for Containerized Applications
 
-Test automation written in Python and Robot Framework for containerized applications on Kubernetes.
+Test automation written in Python and Robot Framework (RF) for containerized applications on Kubernetes.
 
 ## 1. Overview
 Software to automate testing for containerized applications. It's written in Python and Robot Framework and it's highly customizable as test cases can be added dynamically and with minimal effort. The target is to enable the user to input a UAT Excel file which includes all the test cases, then the software executes them and updates the Excel with the result (PASS/FAIL), actual outputs and timestamps for each test case that was executed.
@@ -66,3 +66,129 @@ The global variable ‘${global_data_filename}’ in the SetEnv.txt file control
 ### 4.1. Config Sheet
 The input file must include a Config sheet holding all the user inputs, such as host, port, FQDN, username, password, etc. These are parameters used by utils.robot.
 You may create one or more config sheets (e.g. one per site) and configure the robot suite to the one you intend to use by setting it in the SetEnv.txt file under '${global_data_config_sheetname}'.
+### 4.2. Test Cases Sheet
+Includes the following columns:
+<table>
+  <tr>
+    <th>Column</th>
+    <th>Description</th>
+    <th>Occurence</th>
+  </tr>
+  <tr>
+    <td>TC#</td>
+    <td>Test case identifier.</td>
+    <td>Optional</td>
+  </tr>
+  <tr>
+    <td>Scenario</td>
+    <td>Free text field. Can be used as an enum to categorize text cases.</td>
+    <td>Optional</td>
+  </tr>
+  <tr>
+    <td>Test Cases</td>
+    <td>Test cases title</td>
+    <td>Optional</td>
+  </tr>
+  <tr>
+    <td>Exepcted Result</td>
+    <td>Description of the expected result.</td>
+    <td>Optional</td>
+  </tr>
+  <tr>
+    <td>*** ${User_Input_Parameter_JSON} ***</td>
+    <td>JSON string that maps the parameters used in the input command.</td>
+    <td>Mandatory</td>
+  </tr>
+  <tr>
+    <td>*** ${User_Input_Command} ***</td>
+    <td>Used for the test cases that require an input command. It can include either hard set parameters or dynamic parameters that are defined in the JSON input, e.g. ${parameter1}.</td>
+    <td>Mandatory</td>
+  </tr>
+  <tr>
+    <td>Output</td>
+    <td>The output received from CLI or REST API. It is automatically filled by the software.</td>
+    <td>Filled by RF</td>
+  </tr>
+  <tr>
+    <td>${Test Attendants/Reviewers}</td>
+    <td>Optional field to list the names of the test attendants.<br>It is automatically appended to each test case by RF. The value is retrieved from the ${global_test_attendants} parameter in the Config sheet.</td>
+    <td>Optional</td>
+  </tr>
+  <tr>
+    <td>Test Date</td>
+    <td>The test day and time are automatically filled by RF. The timezone set in the ${global_timezone} config parameter is used.</td>
+    <td>Filled by RF</td>
+  </tr>
+  <tr>
+    <td>Status</td>
+    <td>Enum: [PASS|FAIL]<br>It is automatically filled by RF.</td>
+    <td>Filled by RF</td>
+  </tr>
+</table>
+
+## 5. Test Execution
+### 5.1. Command Line Output
+Below is a sample output of its execution:
+```plaintext
+> robot -d TestLog -L debug Main/main.robot
+==============================================================================
+X System Test
+==============================================================================
+TC-1-1 :: Verify X software version                                   | PASS |
+------------------------------------------------------------------------------
+TC-1-2 :: Verify software history & deployment status                 | PASS |
+------------------------------------------------------------------------------
+TC-1-3 :: Verify Kubernetes version                                   | PASS |
+------------------------------------------------------------------------------
+TC-1-4 :: Verify Kubernetes version                                   | PASS |
+------------------------------------------------------------------------------
+TC-1-5 :: Verify CCD version                                          | PASS |
+------------------------------------------------------------------------------
+TC-1-6 :: Verify CCD node details                                     | PASS |
+------------------------------------------------------------------------------
+TC-1-7 :: Verify pod status                                           | PASS |
+------------------------------------------------------------------------------
+TC-1-8 :: Verify Kubernetes service status                            | PASS |
+------------------------------------------------------------------------------
+TC-1-9 :: Verify Kubernetes deployment status                         | PASS |
+------------------------------------------------------------------------------
+TC-1-10 :: Verify Kubernetes ReplicaSet status                        | PASS |
+------------------------------------------------------------------------------
+TC-1-11 :: Verify Kubernetes HTTP proxy (Ingress) status              | PASS |
+------------------------------------------------------------------------------
+TC-1-12 :: Verify Kubernetes StatefulSet status                       | PASS |
+------------------------------------------------------------------------------
+TC-1-13 :: Verify Kubernetes ConfigMap status                         | PASS |
+------------------------------------------------------------------------------
+TC-1-14 :: Verify Kubernetes job status                               | PASS |
+------------------------------------------------------------------------------
+TC-1-15 :: Verify Cassandra status                                    | PASS |
+------------------------------------------------------------------------------
+TC-1-16 :: Verify Kubernetes Secret status                            | PASS |
+------------------------------------------------------------------------------
+TC-1-17 :: Verify Kubernetes Persistent Volumes (PV)                  | PASS |
+------------------------------------------------------------------------------
+TC-1-18 :: Verify Kubernetes Persistent Volume Claim (PVC)            | PASS |
+------------------------------------------------------------------------------
+TC-1-19 :: GUI Authentication                                         | PASS |
+------------------------------------------------------------------------------
+TC-1-20 :: Generate token with OAuth2 client                          | PASS |
+------------------------------------------------------------------------------
+...
+X System Test                                                         | PASS |
+60 tests, 60 passed, 0 failed
+==============================================================================
+```
+### 5.2. Excel File Output
+When running the test, the input Excel file is updated. The following columns are updated for each executed test case:
+- Output
+- Test Attendants/Reviewers
+- Test Date
+- Status [PASS|FAIL]
+
+Additionally, the following files are produced under TestLog/:
+- log-xxx.html
+- report-xxx.html
+- output-xxx.xml
+
+
